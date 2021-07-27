@@ -1,0 +1,12 @@
+# Python3
+__pycache__/
+
+# Emacs backup files
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
