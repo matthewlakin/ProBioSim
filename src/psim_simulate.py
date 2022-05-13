@@ -29,7 +29,7 @@ import random
 import numpy as np
 import math
 from scipy.integrate import solve_ivp
-from psim_lib import float_leq, error, warning, message
+from psim_lib import float_leq, error, warning, message, quote
 from psim_result import SimulationResult
 
 ##########################################################################################
