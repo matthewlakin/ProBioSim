@@ -78,27 +78,27 @@ class Model(object):
     # Do some basic checking of well-formedness
     def checkWellFormedness(self):
         if not (self.simSettings['length'] > 0):
-            error('Model not well-formed because simulation length is <= 0')
+            error('Model not well-formed because simulation length is <= 0 (found '+str(self.simSettings['length'])+')')
         if not (self.simSettings['points'] > 0):
-            error('Model not well-formed because number of points is <= 0')
+            error('Model not well-formed because number of points is <= 0 (found '+str(self.simSettings['points'])+')')
         if not (type(self.simSettings['points']) is int):
-            error('Model not well-formed because number of points must be an integer')
+            error('Model not well-formed because number of points must be an integer (found '+str(self.simSettings['points'])+')')
         if not ((self.simSettings['seed'] is None) or (type(self.simSettings['seed']) is int)):
-            error('Model not well-formed because "seed" parameter value must either be None or an integer')
+            error('Model not well-formed because "seed" parameter value must either be None or an integer (found '+str(self.simSettings['seed'])+')')
         if not (type(self.simSettings['stiff']) is bool):
-            error('Model not well-formed because "stiff" parameter value must be a bool')
+            error('Model not well-formed because "stiff" parameter value must be a bool (found '+str(self.simSettings['stiff'])+')')
         if not (type(self.simSettings['rtol']) is float and self.simSettings['rtol'] > 0):
-            error('Model not well-formed because "rtol" parameter value must be a float')
+            error('Model not well-formed because "rtol" parameter value must be a float (found '+str(self.simSettings['rtol'])+')')
         if not (type(self.simSettings['atol']) is float and self.simSettings['atol'] > 0):
-            error('Model not well-formed because "atol" parameter value must be a float')
+            error('Model not well-formed because "atol" parameter value must be a float (found '+str(self.simSettings['atol'])+')')
         if not (type(self.simSettings['recordAllIfStochastic']) is bool):
-            error('Model not well-formed because "recordAllIfStochastic" parameter value must be a bool')
+            error('Model not well-formed because "recordAllIfStochastic" parameter value must be a bool (found '+str(self.simSettings['recordAllIfStochastic'])+')')
         for rateName in self.rateDefinitions:
             if not (self.rateDefinitions[rateName] >= 0):
-                error('Model not well-formed because value for rate parameter '+quote(str(rateName))+' is <0')
+                error('Model not well-formed because value for rate parameter '+quote(str(rateName))+' is <0 (found '+str(self.rateDefinitions[rateName])+')')
         for speciesName in self.speciesInits:
             if not (self.speciesInits[speciesName] >= 0):
-                error('Model not well-formed because initial value for species '+quote(str(speciesName))+' is <0')
+                error('Model not well-formed because initial value for species '+quote(str(speciesName))+' is <0 (found '+str(self.speciesInits[speciesName])+')')
         for speciesName in self.allSpeciesNames:
             if not (psim_parse.isValidSpeciesName(speciesName)):
                 error('Model not well-formed because species name '+quote(str(speciesName))+' is not syntactically valid (must be a letter followed by 0+ letters, numbers, or underscores)')
@@ -107,22 +107,23 @@ class Model(object):
         # Check for well-formedness of individual reactions
         for reaction in self.reactions:
             if not (len(reaction['reactants']) > 0 or len(reaction['products']) > 0):
-                error('Model not well-formed because a reaction has no reactants or products')
+                error('Model not well-formed because a reaction has no reactants or products: '+str(reaction))
             if not (sorted(reaction['reactants']) != sorted(reaction['products'])):
-                error('Model not well-formed because a reaction has identical reactants and products')
+                error('Model not well-formed because a reaction has identical reactants and products: '+str(reaction))
             if type(reaction['rate']) is float:
                 if not (reaction['rate'] >= 0):
                     error('Model not well-formed because a reaction has a negative float as its rate constant value: '+str(reaction['rate']))
             elif type(reaction['rate']) is str:
                 if not psim_parse.isValidRateName(reaction['rate']):
-                    error('Model not well-formed because a reaction has an invalid name for its rate constant (must be a letter followed by 0+ letters, numbers, or underscores)')
+                    error('Model not well-formed because a reaction has an invalid rate constant name '+quote(str(reaction['rate']))+
+                          ' (must be a letter followed by 0+ letters, numbers, or underscores)')
                 if not (reaction['rate'] in self.rateDefinitions):
                     error('Model not well-formed because a reaction has a rate constant name '+quote(str(reaction['rate']))+' not featured in the rate definitions')
             else:
                 error('Model not well-formed because a reaction has a rate entry ('+str(reaction['rate'])+') that is neither a float nor a string')
             if 'annotation' in reaction:
                 if not (reaction['annotation'] is None or type(reaction['annotation']) is str):
-                    error('Model not well-formed because a reaction has an annotation that is neither None nor a string')
+                    error('Model not well-formed because a reaction has an annotation that is neither None nor a string: '+str(reaction['annotation']))
         # Check that there are no duplicated reactions (same reactions and products)
         for (i,ri) in enumerate(self.reactions):
             for (j,rj) in enumerate(self.reactions):
@@ -141,19 +142,19 @@ class Model(object):
             lastTime = perturbation['time']
             for action in perturbation['actions']:
                 if not (type(action) is dict):
-                    error('Model not well-formed because a perturbation has an "action" entry that is not a dict')
+                    error('Model not well-formed because a perturbation has an "action" entry that is not a dict: '+str(action))
                 for key in ['speciesName', 'amount', 'relative']:
                     if key not in action:
                         error('Model not well-formed because a perturbation action was missing the key: '+str(quote(key)))
                 if not (action['speciesName'] in self.allSpeciesNames):
                     error('Model not well-formed because species name '+quote(str(speciesName))+' in perturbation action is not mentioned in the list of all species in the model')
                 if not ((type(action['amount']) is float) or (type(action['amount']) is int)):
-                    error('Model not well-formed because a perturbation has an action entry whose "amount" is not a float or an int')
+                    error('Model not well-formed because a perturbation has an action entry whose "amount" is not a float or an int: '+str(action['amount']))
                 if not (type(action['relative']) is bool):
-                    error('Model not well-formed because a perturbation has an action entry whose "relative" value is not a bool')
+                    error('Model not well-formed because a perturbation has an action entry whose "relative" value is not a bool: '+str(action['relative']))
             for f in perturbation['functions']:
                 if not callable(f):
-                    error('Model not well-formed because a perturbation has a function entry that is not callable')
+                    error('Model not well-formed because a perturbation has a function entry that is not callable: '+str(f))
 
     # Run post-update fixes on model to keep it well-formed
     def runPostUpdateFixes(self):
