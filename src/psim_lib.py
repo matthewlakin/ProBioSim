@@ -189,8 +189,10 @@ def distinct(xs):
             temp.append(x)
     return True
 
-# Is one float less than or equal to the other, allowing for floating-point imprecision?
-def float_leq(f1, f2):
-    return (f1 < f2) or math.isclose(f1, f2)
+# Is one float less than or equal to the other? (Allowing for floating-point imprecision...)
+# NB: default values for math.isclose are rel_tol=1e-9 and abs_tol=0.0.
+# Reducing rel_tol value here as the default proved inadequate for some simulations with longer timescales.
+def float_leq(f1, f2, rel_tol=1e-20, abs_tol=0.0):
+    return (f1 < f2) or math.isclose(f1, f2, rel_tol=rel_tol, abs_tol=abs_tol)
 
 ##########################################################################################
