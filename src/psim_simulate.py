@@ -310,9 +310,9 @@ def createRateFunction(species_list, reactions_list, rate_names_values_list):
 
 # Check if value represents an integer
 def valueRepresentsAnInteger(n):
-    if isinstance(n, (int, np.integer)):
+    if isinstance(n, (int, np.int32, np.int64, np.integer)):
         return True
-    elif isinstance(n, (float, np.float)):
+    elif isinstance(n, (float, np.float32, np.float64)):
         return n.is_integer()
     else:
         return False
